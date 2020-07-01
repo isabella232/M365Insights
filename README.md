@@ -1,80 +1,77 @@
-# Setup Azure Data Factory to Extract OData Feed from Workplace Analytics to Blob Storage
+# Set up Azure Data Factory to Extract OData Feed from Workplace Analytics to Blob Storage
 
 [![Deploy to Azure](https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/1-CONTRIBUTION-GUIDE/images/deploytoazure.svg?sanitize=true)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fnk-gears%2Fwpa-adf-blob-feed%2Fmaster%2Ftemplate.json)
 
 
-This document explains on how to Setup the Azure Data Factory and Access Data from Workplace Analytics Enterprise App and Copy them to a Blob Storage using  Azure Resource Manager Template with Powershell Script.
+This document explains on how to set up an Azure data factory to access query data from Workplace Analytics and copy it to a blob storage by using an Azure Resource Manager template with PowerShell script.
 
 **Prerequisites**
 
 - Microsoft Azure subscription
-  - If you do not have one, you can obtain one (for free) here: [https://azure.microsoft.com/free](https://azure.microsoft.com/free/)
-  - The account used to signin must have the **global administrator** role granted to it.
+  - If you do not have one, you can get one (for free) at [https://azure.microsoft.com/free](https://azure.microsoft.com/free/)
+  - The account you use to sign in must have the **global administrator** role granted.
 
-- Powershell 7.0 to Execute the Scripts.
-- Alternatively you can also use Azure Shell in Azure to Exceute these Scripts
+- PowerShell 7.0 to run the scripts.
+- Alternatively, you can also use Azure Shell in Azure to run these scripts.
 
-
-
-### Setup your environment
+## Set up your environment
 
 1. Install AzureRM powershell module (If you already have it installed, skip to the next step.)
    - Documentation: https://docs.microsoft.com/en-us/powershell/azure/install-azurerm-ps
    - Open up PowerShell ISE or PowerShell and run the following:
      - `Install-Module -Name Az -AllowClobber -Scope CurrentUser`
 2. Login to your Azure Subscription
-   - If you don't have an Azure account, sign up for free here: https://azure.microsoft.com/en-us/free/
+   - If you don't have an Azure account, sign up for free at https://azure.microsoft.com/en-us/free/
    - And then from PowerShell run: `Connect-AzAccount`
-   - If you you have multiple subcriptions, you will need to select the one you want to use:
+   - If you have multiple subscriptions, you will need to select the one you want to use:
      - `Select-AzureAzSubscription`
 
 The following sections explains how this will be achieved.
 
 
-### Configuration Variables
+## Configuration variables
 
 ```
-# Powershell Input Prompts
-- Subscription Id   : Use this for WPA : bc85080a-0c4a-41ba-8b88-add5d6714c4b
+# PowerShell input prompts
+- Subscription Id - Use this for WPA: bc85080a-0c4a-41ba-8b88-add5d6714c4b
 - Resource Group Name
 - AD App Registration Name
 
-### Deafult Values
-- Resource Group Location defauled to eastus. Please update Powershell if you want to change
+# Default values
+- Resource group location defaulted to *eastus*. Use PowerShell to change the default or add a new location to create a new Resource group. 
 
 ```
 
-### Template Parameters
+### Template parameters
 
 App Specific
 - wpaReaderAppSecretName
 
 Vault Specific
 - wpaKeyVaultName
-- skipVaultCreation (to resuse existing in the same RG)
+- skipVaultCreation (to reuse existing in the same Resource group)
 
 Storage & ADF Specific
 - wpaAppStorageAccType
 - wpaAppStorageAccNamePrefix
 - wpaAppDataFactoryName
-- wpaADFJobName   e.g PersonEmailStats
-- wpaEntityName   e.g : Persons or Meetings
+- wpaADFJobName   e.g. PersonEmailStats
+- wpaEntityName   e.g. Persons or Meetings
 - wpaSourceODataFeedUrl
 
 **FAQs**
 
-> 1. **Can't we Just use the ARM Template (DeployTemplate via UI) Option to run the entrire steps.?. Do we really need the Powershell ?**
+**Q1. Can I use an Azure Resource Manager template (such as DeployTemplate through the UI) to run all the steps instead of PowerShell?**
 
-- *Currently, Microsoft doesn't provide an Option to Register a Active Directory Application. The Powershell is used only for the ActiveDirectory Creation with Service Principal and to Create Secrets Automatically.*
-- *So, Without Powershell we can't setup this*. We can skip the Powershell for the Subsequent Incremental Deployments. But for the Initial Setup, they MUST use the Powershell to bootstrap the environment
+- PowerShell is required for this initial setup. You must use PowerShell to create the Active Directory with Service Principal, register the Active Directory application, and automatically create secrets.
+- You can skip PowerShell for the subsequent incremental deployments after completing this initial setup.
 
+**Q2. Can I deploy multiple Azure data factories or multiple pipelines with the same data factory and Resource group?**
 
->2. Is it Possible to deploy the Multiple ADF's or Multiple Pipeline Under the same ADF and Resource Group ?
-
-- *We have added a new Parameter called "wpaADFJobName". This can be used to control this behaviour*
-
+Yes, you can use the new "wpaADFJobName" parameter that the initial setup adds to create new pipelines.
 
 ## Folder Structure
+
 ```
 -- template.json
 -- template-params.json
@@ -88,7 +85,8 @@ Storage & ADF Specific
 
 Please edit the variables before deploying
 
-Deploy the template using the PowerShell ISE (Hit F5) or with PowerShell: `.\adf-wpa-feed-deploy.ps1`
+Deploy the template using the PowerShell ISE (Hit F5) or with PowerShell: 
+`.\adf-wpa-feed-deploy.ps1`
 
 ### Destroy the resources
 
@@ -97,11 +95,10 @@ Deploy the template using the PowerShell ISE (Hit F5) or with PowerShell: `.\adf
 ### Note
 
 ```
-The  current OData WPA Service seems to work like a limited dataset. No dynamic query supported at this time. This is confirmed by thr WPA DEv Team.
+The current OData WPA service works like a limited dataset. Dynamic query data is not currently supported.
 
-Example :
-This is a example odata public service, I can use $select. $top etc.
-https://services.odata.org/v4/(S(34wtn2c0hkuk5ekg0pjr513b))/TripPinServiceRW/People?$top=1
+The following is an example of an OData public service that you can use $select and $top with: 
+`https://services.odata.org/v4/(S(34wtn2c0hkuk5ekg0pjr513b))/TripPinServiceRW/People?$top=1` 
 
 ```
 
