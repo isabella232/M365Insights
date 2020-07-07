@@ -24,8 +24,8 @@ You can then join dynamically refreshed Workplace Analytics query data with othe
 
 To set up the automated OData connection between Workplace Analytics query data and your choice Azure data store, you can use one of the following paths to create and configure a new Azure analytics app, which needs company-specific information (secrets) about your private network and your choice data store.
 
-* **Set up with Azure Data Factory UI** – Steps you through creating and registering an app and creating a data factory for the data export.
-* **Set up with Azure PowerShell** – Automates the process end-to-end through PowerShell with predefined scripts that create and register the app, prompt for your organization’s specific parameters, and create and deploy the data factory.
+* [Set up with Azure Data Factory UI](https://docs.microsoft.com/Workplace-Analytics/data-access/query-data-export) – This path steps you through creating and registering an app and creating a data factory for the data export through the Azure Data Factory UI.
+* [Set up with Azure PowerShell](#to-set-up-with-powershell) – Automates the process end-to-end through PowerShell with predefined scripts that create and register the app, prompt for your organization’s specific parameters, and create and deploy the data factory.
 
 ## Prerequisites
 
@@ -34,80 +34,9 @@ To set up the automated OData connection between Workplace Analytics query data 
 * **Azure data store** – Your data store must be [supported by the OData connector](https://docs.microsoft.com/azure/data-factory/connector-odata).
 * **Azure admin** – You need Azure admin privileges to create and register the app in Azure. You also need to ask the Azure global admin to grant you permissions in Azure Data Factory to connect your new app to the Azure data store.
 
-## To set up with Azure Data Factory UI
-
-The following steps you through how to automate the export of Workplace Analytics query data to your choice Azure data store with the [Azure Data Factory UI](https://docs.microsoft.com/azure/data-factory/introduction). Use the following steps in conjunction with the [Azure documentation](https://docs.microsoft.com/azure/data-factory/introduction) to complete this setup.
-
-1. Follow the steps in [Register an application using the Azure portal](https://docs.microsoft.com/azure/active-directory/develop/quickstart-register-app#register-a-new-application-using-the-azure-portal) to create and register a new analytics app in Azure Active Directory.
-2. In **Azure Active Directory App registrations**, select the app from **Step 1**,  and then grant it permissions for accessing Workplace Analytics by selecting **View API permissions**, and then select **Add a permission**. 
-3. Enter and search for the **Workplace Analytics App name** or **ID** and then select the applicable **Workplace Analytics app** from the list.
-
-   ![App permissions](./images/app-permissions.png)
- 
-   To find the Application (client) ID:
-
-   * In **Active Directory**, select **all applications**, and then enter **Workplace Analytics** for the Workplace Analytics enterprise app that you want to use.
-   * Select **Workplace Analytics** from the list.
-   * In **Workplace Analytics Application ID**, copy the ID and paste it in **APIs my organization uses** search field.
-
-     ![Workplace Analytics Application ID](./images/app-id.png)
-
-4.	In **Request API permissions**, select **Application permissions**, select **Analyst**, and then select **Add permissions**. 
-5.	In **API permissions**, the global admin must select **Grant admin consent for [Workplace Analytics…]** before you can continue to the next step.
-
-    ![Grant the app permissions](./images/permissions-grant.png)
-
-6.	Follow the steps in [Create data factory](https://docs.microsoft.com/azure/data-factory/quickstart-create-data-factory-portal) to create a new analytics data factory within Azure Active Directory. 
-7.	In the **Azure Data Factory Overview**, select **Author & Monitor** to open Azure Data Factory.
-
-    > [!Note]
-    > Keep all browser windows open because you must switch between them to complete the following steps.
-
-8.	In **Azure Data Factory**, select **Create a pipeline**. 
-9.	Select the **ellipsis** (**…**) next **Datasets**, and then select **New dataset**. For more details, see [Datasets in Azure Data Factory](https://docs.microsoft.com/azure/data-factory/concepts-datasets-linked-services).
-10. In **Select a data store**, enter **odata**, and then select **OData**. 
-11. In **General**, enter a name and description for the Workplace Analytics query data you’re linking to.
-12. Select **Connection**, select **New**, and then enter a name and description for the OData link, such as **WPA_Odata_Collab**.
-
-13. In **Connect via integration runtime**, select **AutoResolveIntegrationRuntime**. 
-14. In [Workplace Analytics](https://workplaceanalytics.office.com/) > **Queries** > **Results**, copy the OData link for the query data you want to connect to Azure.
-
-    > [!Important]
-    > For automatically refreshed data, you must link to a query that has the [Auto-refresh option](https://docs.microsoft.com/workplace-analytics/tutorials/query-auto-refresh#create-a-query-with-the-auto-refresh-option) selected. For static query results, you’ll need to enter a new OData link each time to update the query data in the connected Azure data store.
-
-15. In **Service URL**, paste the query OData link that you copied in the previous step. 
-16. In **AAD resource**, enter `https://workplaceanalytics.office.com`. 
-17. In **Active Directory**, select **Overview** for the new app, and then copy the **Application (client) ID**.
-18. In **Azure Data Factory** > **New linked service** > **Service principal ID**, copy the client ID. For  details, see [Linked service properties](https://docs.microsoft.com/azure/data-factory/connector-odata#linked-service-properties).
-19. In **Authentication type**, select either **AAD service principal with Key** or **AAD service principal with Cert**. Keep **New linked service (OData)** open in a separate browser window. For details about these options, see [Use Azure Key Vault secrets in pipeline activities](https://docs.microsoft.com/azure/data-factory/how-to-use-azure-key-vault-secrets-pipeline-activities).
-20. In **Azure Active Directory** > **your newly registered analytics app**, select **Certificates & secrets**, and then do one of the following.
-
-    * **For Key authentication**, select **New client secret** and in **Add a client secret**, enter a description, select when it expires, and then select **Add**. In **Client secrets**, select the new secret, and then select the **Copy icon** to copy it.
-    * **For Certificate authentication** (preferred for higher security), select a certificate and copy it. 
-
-21. In **Azure Data Factory**, do the following for the applicable authentication type:
-
-    * For Service principal key, paste the new client secret copied in the previous step into Service principal key.
-    * For Azure key vault, copy and paste the certificate and the other required information. See Set and retrieve a secret from Azure Key Vault for details. 
-
-22.	Select **Test connection** to test the OData linked service. 
-23.	After you see **Connection successful**, select **Create**. 
-24.	In **Connection** > **Linked service** for the new OData linked service, select the new dataset you just created in the previous steps.
-25.	In **Connection** > **Path**, select **Edit**, and then enter the **Entity set name**. To find it, copy and open the OData query link from [Workplace Analytics](https://workplaceanalytics.office.com/) > **Queries** > **Results** in a new browser window, and then search for **metadata**. The entity name is shown after **$metadata#**. For example, the entity name as shown in this graphic is **Persons**: 
-
-     ![Query entity set name](./images/entity-set-name.png)
-
-26. Select **Preview data** for the path to confirm you entered the correct entity. 
-27. In Azure Data Factory > Properties, confirm the name and description for this new dataset. 
-28. Select **Publish all** at the top, and then select **Publish**.
-29. In **Pipelines**, create a new pipeline that can use the new OData dataset to copy the Workplace Analytics data to the external resource. For details, see [Create a pipeline](https://docs.microsoft.com/azure/data-factory/tutorial-copy-data-portal#create-a-pipeline).
-30. For the new pipeline, select **Source**, in **Source dataset**, select the name of new OData dataset, and in **Use query**, select **Table**. 
-31. Create a linked service for the data store you want to export to. For details, see [Linked services](https://docs.microsoft.com/azure/data-factory/author-management-hub#linked-services).
-32. In **Sink** > **Sink dataset**, select the linked service name you created in the previous step.
-
 ## To set up with PowerShell
 
-The following uses [Azure PowerShell](https://docs.microsoft.com/azure/data-factory/quickstart-create-data-factory-powershell) to create and register a new analytics app and deploy the data factory for the export end-to-end. 
+The following uses [Azure PowerShell](https://docs.microsoft.com/azure/data-factory/quickstart-create-data-factory-powershell) to create and register a new analytics app and deploy the data factory for the export end-to-end.
 
 You can then use this new data factory to access query data from Workplace Analytics and copy it to your choice data store (blob storage) by using the Azure Resource Manager template. You can reuse this new app over time for multiple projects without having to repeat these steps. You can also reuse the data factory you created for new pipelines.
 
@@ -139,8 +68,11 @@ You can then use this new data factory to access query data from Workplace Analy
    - AD App Registration Name
    - Resource Group Location (confirm or change the default)
 
-5.	The Resource Group location uses an existing one as the default. You can specify a new one and the script will create it for you. 
-6.	Download the following files to use for this setup:
+    > [!Important]
+    > For automatically refreshed data, you must link to a Workplace Analytics query that uses the [Auto-refresh option](https://docs.microsoft.com/workplace-analytics/tutorials/query-auto-refresh#create-a-query-with-the-auto-refresh-option). For static query results, you’ll need to enter a new OData link each time to update the query data in the connected Azure data store.
+
+5. The Resource Group location uses an existing one as the default. You can specify a new one and the script will create it for you. 
+6. Download the following files to use for this setup:
 
     * [template.json](template.json)
     * [template-params.json](template-params.json)
@@ -148,7 +80,7 @@ You can then use this new data factory to access query data from Workplace Analy
     * [adf-wpa-destroy.ps1](adf-wpa-destroy.ps1)
     * [show-parameters.ps1](show-parameters.ps1)
 
-7.	In PowerShell, run the following and edit the applicable parameters: 
+7. In PowerShell, run the following and edit the applicable parameters: 
 
     ```
     template-params.json
@@ -160,12 +92,17 @@ You can then use this new data factory to access query data from Workplace Analy
     * Vault specifications - wpaKeyVaultName and skipVaultCreation (you can reuse an existing key or vault in the same resource group)
     * Storage and Azure Data Factory specifications
 
-      - wpaAppStorageAccType
-      - wpaAppStorageAccNamePrefix
-      - wpaAppDataFactoryName
-      - wpaADFJobName e.g PersonEmailStats
-      - wpaEntityName - such as **Persons** or **Meetings**, see **Step 25** in [To set up with Azure Data Factory UI](#to-set-up-with-azure-data-factory-ui) for how to find the entity name, which is in the OData link used for the Workplace Analytics query data export.
-      - wpaSourceODataFeedUrl
+      - **wpaAppStorageAccType**
+      - **wpaAppStorageAccNamePrefix**
+      - **wpaAppDataFactoryName**
+      - **wpaADFJobName** - for example **PersonEmailStats**
+      - **wpaEntityName** - for example **Persons** or **Meetings**, see the following note for details on how to find it
+      - **wpaSourceODataFeedUrl**
+
+      > [!Note]
+      > To find the entity name, which is in the OData link used for the Workplace Analytics query data export: Copy the OData query link from [Workplace Analytics](https://workplaceanalytics.office.com/) > **Queries** > **Results** and open it in a new browser window. Then search for **metadata** to find the entity name, which is shown after **$metadata#**. For example, the entity name shown in this graphic is **Persons**:
+
+     ![Query entity set name](./images/entity-set-name.png)
 
 8. After you enter the correct parameter variables, run the following script in PowerShell to deploy the template:
 
@@ -176,7 +113,7 @@ You can then use this new data factory to access query data from Workplace Analy
 9. After successfully deploying the template, run the following in PowerShell to destroy the resources:
 
    ```
-   .\adf-wpa-destroy.ps1
+   \adf-wpa-destroy.ps1
    ```
 
 10. Open the **Azure Resource group** to confirm your new app is available.<!-- The following graphic shows an example resource group that includes the new data factory, its applicable key vault, and the deployed storage.-->
@@ -185,10 +122,14 @@ You can also view the app in **Azure Active Directory** > **All applications** >
 
 ## Frequently asked questions
 
-#### Q1. Can I use an Azure Resource Manager template to run the script? 
+#### Q1. Can I use an Azure Resource Manager template to run the script?
 
-No, you can only use PowerShell to complete these steps. PowerShell is required for the Active Directory Creation with Service Principal and to Create Secrets Automatically. After the data factory is set up with the new app, you can skip PowerShell for subsequent incremental deployments. 
+No, you can only use PowerShell to complete these steps. PowerShell is required for the Active Directory Creation with Service Principal and to Create Secrets Automatically. After the data factory is set up with the new app, you can skip PowerShell for subsequent incremental deployments.
 
 #### Q2. Can I deploy multiple pipelines with the same Azure Directory Factory and Resource Group?
 
 Yes, you can use the "wpaADFJobName" parameter to deploy the new data factory you set up for other pipelines moving forward.
+
+## Related topic
+
+[Automate query data export to Azure with Azure Data Factory UI](https://docs.microsoft.com/Workplace-Analytics/data-access/query-data-export)
