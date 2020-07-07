@@ -94,8 +94,6 @@ Deploy the template using the PowerShell ISE (Hit F5) or with PowerShell:
 ### Note
 
 ```
-The current OData WPA service works like a limited dataset. Dynamic query data is not currently supported.
-
 The following is an example of an OData public service that you can use $select and $top with: 
 `https://services.odata.org/v4/(S(34wtn2c0hkuk5ekg0pjr513b))/TripPinServiceRW/People?$top=1` 
 

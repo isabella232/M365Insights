@@ -120,7 +120,7 @@ You can then use this new data factory to access query data from Workplace Analy
 
 2. Open PowerShell, and then log in to your Azure subscription as an admin with applicable privileges granted by the global admin:
 
-   ```powershell
+   ```
    Connect-AzAccount
    ```
 
@@ -129,7 +129,7 @@ You can then use this new data factory to access query data from Workplace Analy
 
 3. If you have multiple Azure subscriptions, run the following to choose which subscription to use for this data factory:
 
-   ```powershell
+   ```
    Select-AzureAzSubscription
    ```
 
@@ -151,7 +151,7 @@ You can then use this new data factory to access query data from Workplace Analy
 
 7.	In PowerShell, run the following and edit the applicable parameters: 
 
-    ```powershell
+    ```
     template-params.json
     ```
 
@@ -170,13 +170,13 @@ You can then use this new data factory to access query data from Workplace Analy
 
 8. After you enter the correct parameter variables, run the following script in PowerShell to deploy the template:
 
-   ```powershell
+   ```
    \adf-wpa-feed-deploy.ps1
    ```
 
 9. After successfully deploying the template, run the following in PowerShell to destroy the resources:
 
-   ```powershell
+   ```
    .\adf-wpa-destroy.ps1
    ```
 
