@@ -186,7 +186,7 @@ You can also view the app in **Azure Active Directory** > **All applications** >
 
 ## Frequently asked questions
 
-#### Q1. Can I use a Azure Resource Manager template to run the script? 
+#### Q1. Can I use an Azure Resource Manager template to run the script? 
 
 No, you can only use PowerShell to complete these steps. PowerShell is required for the Active Directory Creation with Service Principal and to Create Secrets Automatically. After the data factory is set up with the new app, you can skip PowerShell for subsequent incremental deployments. 
 
