@@ -1,6 +1,5 @@
 ---
 
-ROBOTS: NOINDEX,NOFOLLOW
 title: Automate query data export to Azure
 description: Steps for admins to set up an automated query data export to Azure
 author: madehmer
