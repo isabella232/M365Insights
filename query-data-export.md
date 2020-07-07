@@ -61,8 +61,8 @@ The following steps you through how to automate the export of Workplace Analytic
 6.	Follow the steps in [Create data factory](https://docs.microsoft.com/azure/data-factory/quickstart-create-data-factory-portal) to create a new analytics data factory within Azure Active Directory. 
 7.	In the **Azure Data Factory Overview**, select **Author & Monitor** to open Azure Data Factory.
 
-   > [!Note]
-   > Keep all browser windows open because you must switch between them to complete the following steps.
+    > [!Note]
+    > Keep all browser windows open because you must switch between them to complete the following steps.
 
 8.	In **Azure Data Factory**, select **Create a pipeline**. 
 9.	Select the **ellipsis** (**…**) next **Datasets**, and then select **New dataset**. For more details, see [Datasets in Azure Data Factory](https://docs.microsoft.com/azure/data-factory/concepts-datasets-linked-services).
@@ -73,8 +73,8 @@ The following steps you through how to automate the export of Workplace Analytic
 13. In **Connect via integration runtime**, select **AutoResolveIntegrationRuntime**. 
 14. In [Workplace Analytics](https://workplaceanalytics.office.com/) > **Queries** > **Results**, copy the OData link for the query data you want to connect to Azure.
 
-   > [!Important]
-   > For automatically refreshed data, you must link to a query that has the [Auto-refresh option](https://docs.microsoft.com/workplace-analytics/tutorials/query-auto-refresh#create-a-query-with-the-auto-refresh-option) selected. For static query results, you’ll need to enter a new OData link each time to update the query data in the connected Azure data store.
+    > [!Important]
+    > For automatically refreshed data, you must link to a query that has the [Auto-refresh option](https://docs.microsoft.com/workplace-analytics/tutorials/query-auto-refresh#create-a-query-with-the-auto-refresh-option) selected. For static query results, you’ll need to enter a new OData link each time to update the query data in the connected Azure data store.
 
 15. In **Service URL**, paste the query OData link that you copied in the previous step. 
 16. In **AAD resource**, enter `https://workplaceanalytics.office.com`. 
@@ -183,9 +183,6 @@ You can then use this new data factory to access query data from Workplace Analy
 10. Open the **Azure Resource group** to confirm your new app is available.<!-- The following graphic shows an example resource group that includes the new data factory, its applicable key vault, and the deployed storage.-->
 
 You can also view the app in **Azure Active Directory** > **All applications** > enter the name of the app to search for it.<!-- Then you can select it to view it. For example, this shows the rvtest_app:-->
-
-> [!Note]
-> The current OData WPA connection works like a limited dataset. Dynamic queries are not currently supported.
 
 ## Frequently asked questions
 
