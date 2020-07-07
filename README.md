@@ -11,8 +11,8 @@ This document explains on how to set up an Azure data factory to access query da
   - If you do not have one, you can get one (for free) at [https://azure.microsoft.com/free](https://azure.microsoft.com/free/)
   - The account you use to sign in must have the **global administrator** role granted.
 
-- PowerShell 7.0 to run the scripts.
-- Alternatively, you can also use Azure Shell in Azure to run these scripts.
+- PowerShell 7.0 or later to run the scripts.
+- Alternatively, you can also use Azure PowerShell to run these scripts.
 
 ## Set up your environment
 
@@ -26,14 +26,13 @@ This document explains on how to set up an Azure data factory to access query da
    - If you have multiple subscriptions, you will need to select the one you want to use:
      - `Select-AzureAzSubscription`
 
-The following sections explains how this will be achieved.
-
+The following the required setup.
 
 ## Configuration variables
 
 ```
 # PowerShell input prompts
-- Subscription Id - Use this for WPA: bc85080a-0c4a-41ba-8b88-add5d6714c4b
+- Subscription Id 
 - Resource Group Name
 - AD App Registration Name
 
