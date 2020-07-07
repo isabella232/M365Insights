@@ -1,4 +1,4 @@
-# Set up Azure Data Factory to Extract OData Feed from Workplace Analytics to Blob Storage
+# Set up Azure Data Factory to extract OData feed from Workplace Analytics to an Azure data store
 
 [![Deploy to Azure](https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/1-CONTRIBUTION-GUIDE/images/deploytoazure.svg?sanitize=true)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fnk-gears%2Fwpa-adf-blob-feed%2Fmaster%2Ftemplate.json)
 
@@ -16,7 +16,7 @@ This document explains on how to set up an Azure data factory to access query da
 
 ## Set up your environment
 
-1. Install AzureRM powershell module (If you already have it installed, skip to the next step.)
+1. Install AzureRM PowerShell module (If you already have it installed, skip to the next step.)
    - Documentation: https://docs.microsoft.com/en-us/powershell/azure/install-azurerm-ps
    - Open up PowerShell ISE or PowerShell and run the following:
      - `Install-Module -Name Az -AllowClobber -Scope CurrentUser`
@@ -37,7 +37,7 @@ The following the required setup.
 - AD App Registration Name
 
 # Default values
-- Resource group location defaulted to *eastus*. Use PowerShell to change the default or add a new location to create a new Resource group. 
+- Resource group location defaulted to *eastus* - Use PowerShell to change the default or add a new location to create a new Resource group. 
 
 ```
 
@@ -82,9 +82,10 @@ Yes, you can use the new "wpaADFJobName" parameter that the initial setup adds t
 
 ### Deploy the template
 
-Please edit the variables before deploying
+Edit the variables before deploying:
 
-Deploy the template using the PowerShell ISE (Hit F5) or with PowerShell: 
+Deploy the template by using the PowerShell ISE (Hit F5) or with PowerShell:
+
 `.\adf-wpa-feed-deploy.ps1`
 
 ### Destroy the resources
@@ -98,4 +99,3 @@ The following is an example of an OData public service that you can use $select 
 `https://services.odata.org/v4/(S(34wtn2c0hkuk5ekg0pjr513b))/TripPinServiceRW/People?$top=1` 
 
 ```
-
