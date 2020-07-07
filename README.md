@@ -120,8 +120,6 @@ You can then use this new data factory to access query data from Workplace Analy
 
     You can also view the app in **Azure Active Directory** > **All applications** > enter the name of the app to search for it.<!-- Then you can select it to view it. For example, this shows the rvtest_app:-->
 
-[![Deploy to Azure](https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/1-CONTRIBUTION-GUIDE/images/deploytoazure.svg?sanitize=true)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fnk-gears%2Fwpa-adf-blob-feed%2Fmaster%2Ftemplate.json)
-
 ## Frequently asked questions
 
 #### Q1. Can I use an Azure Resource Manager template to run the script?
@@ -131,6 +129,8 @@ No, you can only use PowerShell to complete these steps. PowerShell is required 
 #### Q2. Can I deploy multiple pipelines with the same Azure Directory Factory and Resource Group?
 
 Yes, you can use the "wpaADFJobName" parameter to deploy the new data factory you set up for other pipelines moving forward.
+
+[![Deploy to Azure](https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/1-CONTRIBUTION-GUIDE/images/deploytoazure.svg?sanitize=true)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fnk-gears%2Fwpa-adf-blob-feed%2Fmaster%2Ftemplate.json)
 
 ## Related topic
 
