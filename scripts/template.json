@@ -2,26 +2,6 @@
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "dataFactoryLocation": {
-            "type": "string",
-            "defaultValue": "[resourceGroup().location]",
-            "minLength": 3,
-            "maxLength": 11,
-            "metadata": {
-                "description": "Data factory location"
-            }
-        },
-
-        "wpaAppDataFactoryName": {
-            "type": "string",
-            "defaultValue": "wpadatafeed",
-            "minLength": 3,
-            "maxLength": 25,
-            "metadata": {
-                "description": "Data factory name"
-            }
-        },
-
         "wpaReaderAppId": {
             "type": "string",
             "defaultValue": "",
@@ -29,14 +9,13 @@
                 "description": "Azure AD APP Id"
             }
         },
-
-        "skipVaultCreation":{
+        "appServicePrincipalId": {
             "type": "string",
-            "defaultValue": "No",
             "metadata": {
-                "description": "Specifies whether we need to Skip Vault Creation"
+                "description": "App service principal Id"
             }
         },
+
         "wpaKeyVaultName": {
             "type": "string",
             "metadata": {
@@ -57,48 +36,36 @@
                 "description": "Specifies the secret value to be used in the vault for the OData reader app"
             }
         },
-        "appServicePrincipalId": {
+
+
+
+
+        "dataFactoryLocation": {
             "type": "string",
+            "defaultValue": "[resourceGroup().location]",
+            "minLength": 3,
+            "maxLength": 11,
             "metadata": {
-                "description": "App service principal Id"
+                "description": "Data factory location"
             }
         },
 
-        "wpaStorageContainerName": {
+        "wpaAppDataFactoryName": {
             "type": "string",
-            "defaultValue": "wpaexports",
-            "metadata": {
-                "description": "Specifies the name of the blob container to which the wpa feed to be exported."
-            }
-        },
-        "wpaAppStorageAccType": {
-            "type": "string",
-            "defaultValue": "Standard_LRS",
-            "allowedValues": [
-                "Standard_LRS",
-                "Standard_GRS",
-                "Standard_ZRS",
-                "Premium_LRS"
-            ],
-            "metadata": {
-                "description": "Storage Account type"
-            }
-        },
-        "wpaAppStorageAccNamePrefix": {
-            "type": "string",
-            "defaultValue": "storage",
+            "defaultValue": "wpadatafeed",
             "minLength": 3,
             "maxLength": 25,
             "metadata": {
-                "description": "Prefix for the Storage Acc name to be combined with the unique string"
+                "description": "Data factory name"
             }
         },
+
 
         "wpaADFJobName": {
             "type": "string",
             "defaultValue": "Persons",
             "metadata": {
-                "description": "The entity which you need to pull data for"
+                "description": "The Azure Data Factory to be Created"
             }
         },
         "wpaEntityName": {
@@ -115,13 +82,79 @@
             "metadata": {
                 "description": "WPA OData API Feed url"
             }
+        },
+        "wpaAppStorageAccName": {
+            "type": "string",
+            "defaultValue":  "wpastorage<resourceGroup_id>",
+            "minLength": 3,
+            "maxLength": 25,
+            "metadata": {
+                "description": "Prefix for the Storage Acc name cannot contain special characters"
+            }
+        },
+
+        "wpaAppStorageAccType": {
+            "type": "string",
+            "defaultValue": "Standard_LRS",
+            "allowedValues": [
+                "Standard_LRS",
+                "Standard_GRS",
+                "Standard_ZRS",
+                "Premium_LRS"
+            ],
+            "metadata": {
+                "description": "Storage Account type"
+            }
+        },
+
+
+        "wpaStorageContainerName": {
+            "type": "string",
+            "defaultValue":"wpaexports",
+            "metadata": {
+                "description": "Specifies the name of the blob container to which the wpa feed to be exported."
+            }
+        },
+
+        "storageTargetBlobFolderPath": {
+            "type": "string",
+            "defaultValue":"some-folder/",
+            "metadata": {
+                "description": "Specifies the path to the blob folder. Without the container Name"
+            }
+        },
+
+        "skipStorageCreation":{
+            "type": "string",
+            "defaultValue": "No",
+            "allowedValues": [
+                "Yes",
+                "No"
+            ],
+            "metadata": {
+                "description": "Specifies whether we need to Skip Storage Creation and use the existing"
+            }
+        },
+        "skipVaultCreation":{
+            "type": "string",
+            "defaultValue": "No",
+            "allowedValues": [
+                "Yes",
+                "No"
+            ],
+            "metadata": {
+                "description": "Specifies whether we need to Skip Vault Creation"
+            }
         }
+
+
     },
     "variables": {
-        "targetFolderPath":"@concat(formatDateTime(adddays(utcnow(),-1),'yyyy'),'/',",
+
+
         "factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('wpaAppDataFactoryName'),uniqueString(resourceGroup().id))]",
         "factoryName":  "[concat(parameters('wpaAppDataFactoryName'), uniqueString(resourceGroup().id))]",
-        "storageAccName": "[concat(parameters('wpaAppStorageAccNamePrefix'), uniqueString(resourceGroup().id))]",
+        "storageAccName": "[parameters('wpaAppStorageAccName')]",
         "contributorRole": "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Authorization/roleDefinitions/', 'ba92f5b4-2d11-453d-a403-e96b0029c9fe')]",
         "sourceDSName":  "[concat('WPAODataDS','_',parameters('wpaADFJobName'))]",
         "targetDSName":  "[concat('DelimitedTextDS','_',parameters('wpaADFJobName'))]",
@@ -302,7 +335,7 @@
 
         },
         {
-            "condition": "[not(equals(parameters('skipVaultCreation'), 'Yes'))]",
+            "condition": "[not(equals(toLower(parameters('skipVaultCreation')), 'yes'))]",
             "type": "Microsoft.KeyVault/vaults",
             "name": "[parameters('wpaKeyVaultName')]",
             "location": "[resourceGroup().location]",
@@ -311,6 +344,8 @@
             "properties": {
                 "enabledForDeployment": true,
                 "enabledForTemplateDeployment": true,
+                "enabledForDiskEncryption": true,
+
                 "sku": {
                     "family": "A",
                     "name": "standard"
@@ -320,16 +355,8 @@
                         {
                             "objectId": "[parameters('appServicePrincipalId')]",
                             "tenantId": "[subscription().tenantId]",
-                            "permissions": {
-                                "keys": [
-                                    "Get"
-                                ],
-                                "secrets": [
-                                    "Get"
-                                ],
-                                "certificates": []
-                            },
-                            "applicationId": null
+                            "permissions":{"keys":["Get","List","Update","Create","Import","Delete","Recover","Backup","Restore"],"secrets":["Get","List","Set","Delete","Recover","Backup","Restore"],"certificates":["Get","List","Update","Create","Import","Delete","Recover","Backup","Restore","ManageContacts","ManageIssuers","GetIssuers","ListIssuers","SetIssuers","DeleteIssuers"]}
+
                         }
 
                     ]
@@ -338,7 +365,7 @@
         },
 
         {
-            "condition": "[not(equals(parameters('skipVaultCreation'), 'Yes'))]",
+
             "comments": "Key Vault Secret",
             "type": "Microsoft.KeyVault/vaults/secrets",
             "name": "[concat(parameters('wpaKeyVaultName'), '/', parameters('wpaReaderAppSecretName'))]",
@@ -371,11 +398,11 @@
                 "typeProperties": {
                     "location": {
                         "type": "AzureBlobStorageLocation",
-                        "container": "wpaexports",
-                        "folderPath": {
-                            "value": "[concat(variables('targetFolderPath'),'''',parameters('wpaADFJobName'),''')')]",
-                            "type": "Expression"
-                        }
+                        "container": "[parameters('wpaStorageContainerName')]",
+                        "fileName": "[concat('@concat(''',parameters('wpaEntityName') , '_''',',formatDateTime(utcnow(), ''yyyy-MM-dd_h_m''), ''.csv'')')]",
+
+                        "folderPath": "[parameters('storageTargetBlobFolderPath')]"
+
                     },
                     "columnDelimiter": ",",
                     "escapeChar": "\\",
@@ -389,6 +416,7 @@
             ]
         },
         {
+            "condition": "[not(equals(toLower(parameters('skipStorageCreation')), 'yes'))]",
             "type": "Microsoft.Storage/storageAccounts",
             "name": "[variables('storageAccName')]",
             "apiVersion": "2016-01-01",
@@ -409,6 +437,7 @@
             ]
         },
         {
+            "condition": "[not(equals(toLower(parameters('skipStorageCreation')), 'yes'))]",
             "type": "Microsoft.Storage/storageAccounts/providers/roleAssignments",
             "apiVersion": "2018-09-01-preview",
             "name": "[concat(variables('storageAccName'), '/Microsoft.Authorization/', guid(uniqueString(variables('storageAccName'))))]",
