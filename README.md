@@ -111,13 +111,7 @@ You can then use this new data factory to access query data from Workplace Analy
    \adf-wpa-feed-deploy.ps1
    ```
 
-9. After successfully deploying the template, run the following in PowerShell to destroy the resources:
-
-   ```
-   \adf-wpa-destroy.ps1
-   ```
-
-10. Open the **Azure Resource group** to confirm your new app is available.<!-- The following graphic shows an example resource group that includes the new data factory, its applicable key vault, and the deployed storage.-->
+9. Open the **Azure Resource group** to confirm your new app is available.<!-- The following graphic shows an example resource group that includes the new data factory, its applicable key vault, and the deployed storage.-->
 
     You can also view the app in **Azure Active Directory** > **All applications** > enter the name of the app to search for it.<!-- Then you can select it to view it. For example, this shows the rvtest_app:-->
 
