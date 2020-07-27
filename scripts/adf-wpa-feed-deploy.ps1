@@ -44,13 +44,21 @@ $templatePath = "./template.json"
 $templateBaseParamPath = "./template-params.json"
 #===============================================================
 
-
+if ([string]::IsNullOrWhiteSpace($subscriptionId)){
+   $subscriptionId="bc85080a-0c4a-41ba-8b88-add5d6714c4b"
+}
+if ([string]::IsNullOrWhiteSpace($resourceGroupName)){
+   $resourceGroupName="NKJUL22"
+}
+if ([string]::IsNullOrWhiteSpace($ADAppRegistrationName)){
+   $ADAppRegistrationName="NKJUL07"
+}
 
 # select subscription
 Write-Host "Selecting subscription '$subscriptionId'";
 Select-AzSubscription -SubscriptionID $subscriptionId;
 
-Write-Host "Setting up Workplace Analytics Reader App..."
+Write-Host "Setting up Reader App..."
 #bc85080a-0c4a-41ba-8b88-add5d6714c4b
 
 # App Registration
@@ -74,20 +82,8 @@ echo "Checking App Registration..."
 
 If ($ad_app -eq $null) {
 
-	$app = New-AzureADApplication -DisplayName $reader_app_name -ReplyUrls https://nourl
-	$appSp = New-AzureADServicePrincipal -appid $app.AppId
-	echo "App Registraton done for $reader_app_name"
-
-	echo $appSp;
-
-	$sp = Get-AzureADServicePrincipal -Filter "displayName eq '$wpa_app_name'"
-	$sp.AppRoles | Where-Object { $_.DisplayName -eq 'User.Read'}
-
-	#Assign AppRole
-	$reader_appRole = $sp.AppRoles | Where-Object { $_.DisplayName -eq $reader_app_role_name }
-	$reader_sp = Get-AzureADServicePrincipal -Filter "displayName eq '$reader_app_name'"
-	New-AzureADServiceAppRoleAssignment -ObjectId $reader_sp.ObjectId -PrincipalId $reader_sp.ObjectId -ResourceId $sp.ObjectId -Id $reader_appRole.Id
-
+	echo "App not found. Please use the register-app-for-wpa script before running this."
+	Break
 }
 
 	$ad_app=Get-AzureADApplication -Filter "displayName eq '$reader_app_name'"
@@ -108,6 +104,7 @@ if(!$resourceGroup)
 }
 else{
     Write-Host "Using existing resource group '$resourceGroupName'";
+    Write-Host "Using App '$reader_app_name'";
 }
 
 #=====ADD SECRET TO APP===================================================
@@ -115,7 +112,7 @@ $dataReaderAppClientSecret=""
 $appSecretIdentifier=$tplParameters.wpaReaderAppSecretName.value
 # Create a Client Secret If not exists
 $app_secretInfo=Get-AzureADApplicationPasswordCredential -ObjectId $ad_app.ObjectId
-If ($app_secretInfo -eq $null) {
+#If ($app_secretInfo -eq $null) {
 
 $startDate = Get-Date
 $endDate = $startDate.AddYears(3)
@@ -126,7 +123,7 @@ echo "Client Secret Created."
 #Store the Secret temporarily so that we can pass it to KeyVault creation
 $dataReaderAppClientSecret=$appClientSecret.Value
 
-}
+#}
 
 
 
@@ -155,11 +152,29 @@ $appServicePrincipalId=$ad_App_sp.ObjectId
 	$parameters["appServicePrincipalId"]= $appServicePrincipalId
 	$parameters["wpaReaderAppSecretValue"]= $dataReaderAppClientSecret
 
-   echo "Preparing for ARM Template Deployment"
+   $skipStorageCreation=$tplParameters.skipStorageCreation.value.toLower()
+
+   if($skipStorageCreation -eq "yes"){
+
+      $storageAccountName=$tplParameters.wpaAppStorageAccName.value
+      $storageAcc=Get-AzStorageAccount -ResourceGroupName $resourceGroupName -Name  $storageAccountName
+
+      If($storageAcc -ne $null){
+      echo "Assigning Permissions for the App to write to Blob Storage"
+      $stg_role=Get-AzRoleAssignment -ObjectId $ad_App_sp.ObjectId -RoleDefinitionName "Storage Blob Data Contributor" -Scope $storageAcc.Id
+      If ($stg_role -eq $null) {
+
+      echo " Adding permissions for blob storage"
+      $role_for_storage=New-AzRoleAssignment -ObjectId $ad_App_sp.ObjectId -RoleDefinitionName "Storage Blob Data Contributor" -Scope $storageAcc.Id
+
+      }
+      }
+
+   }
 
 
    echo "Deploying ARM Resources..."
-   echo $parameters
+
    $ARMOutput =New-AzResourceGroupDeployment -ResourceGroupName $resourceGroup.ResourceGroupName -TemplateFile $templatePath -TemplateParameterObject $parameters
    echo  $ARMOutput
 
