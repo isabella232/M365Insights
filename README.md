@@ -79,11 +79,11 @@ You can then use this new data factory to access query data from Workplace Analy
 
 5. Download the following files to use for this setup:
 
-    * [template.json](template.json)
-    * [template-params.json](template-params.json)
+    * [template.json](../scripts/template.json)
+    * [template-params.json](../scripts/template-params.json)
     * [adf-wpa-feed-deploy.ps1](../scripts/adf-wpa-feed-deploy.ps1)
     * [register-app-for-wpa.ps1](../scripts/register-app-for-wpa.ps1)
-    * [show-app-info.ps1](.../scripts/show-app-info.ps1)
+    * [show-app-info.ps1](../scripts/show-app-info.ps1)
 
 6. In PowerShell, run the following and edit the applicable parameters:
 
