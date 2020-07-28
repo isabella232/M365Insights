@@ -91,15 +91,11 @@ You can then use this new data factory to access query data from Workplace Analy
     template-params.json
     ```
 
-    Edit the following to specify new parameters or confirm the defaults in the file.
-
-    * App specifications – wpaReaderAppSecretName
-    * Vault specifications - wpaKeyVaultName and skipVaultCreation (you can reuse an existing key or vault in the same resource group)
-    * Storage and Azure Data Factory specifications:
+    Edit the following to specify new parameters or confirm the defaults in the file for the storage and Azure Data Factory specifications:
 
       - **skipStorageCreation** - To use existing storage, keep default **Yes** value. To create new storage, change it to **No**.
-      - **wpaReaderAppSecretName** - The secret name to use for this app
-      - **skipVaultCreation** - To use an existing key vault, keep default **Yes** value. To create a new key vault, change it to **No**.
+      - **wpaReaderAppSecretName** - The secret name to use for this app.
+      - **skipVaultCreation** - You can reuse an existing key or vault in the same resource group. To use an existing key vault, keep default **Yes** value. To create a new key vault, change it to **No**.
       - **wpaKeyVaultName** - Key vault name of the existing or new vault.
       - **wpaAppStorageAccType** - Name of the storage account type to use for this app, such as **Standard_LRS**.
       - **wpaAppStorageAccName** - Name of the storage account to use for this app.
@@ -108,6 +104,7 @@ You can then use this new data factory to access query data from Workplace Analy
       - **wpaADFJobName** - Name of the Azure Data factory job, such as **PersonEmailStats**.
       - **wpaEntityName** - Name of the query data entity this app will use. For example **Persons** or **Meetings**, see the following note for details on how to find it.
       - **wpaSourceODataFeedUrl** - OData URL of the query data that you must copy from within Workplace Analytics. See the following note to locate it.
+
 
       > [!Note]
       > To find the entity name, which is in the OData link used for the Workplace Analytics query data export:
