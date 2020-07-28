@@ -105,6 +105,7 @@ You can then use this new data factory to access query data from Workplace Analy
       - **wpaEntityName** - Name of the query data entity this app will use. For example **Persons** or **Meetings**, see the following note for details on how to find it.
       - **wpaSourceODataFeedUrl** - OData URL of the query data that you must copy from within Workplace Analytics. See the following note to locate it.
 
+
       > [!Note]
       > To find the entity name, which is in the OData link used for the Workplace Analytics query data export:
       > 
