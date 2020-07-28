@@ -30,13 +30,13 @@ To set up the automated OData connection between Workplace Analytics query data 
 ## Prerequisites
 
 * **Workplace Analytics licensed analyst** – Must be assigned a license and an Analyst role for Workplace Analytics and have query results with the data you want to export.
-* **Microsoft Azure subscription** – If you don't have an Azure subscription, create a [free account](https://azure.microsoft.com/free/) now. You’ll be using [Azure Active Directory](https://docs.microsoft.com/azure/active-directory/), [OData connector](https://docs.microsoft.com/azure/data-factory/connector-odata#supported-capabilities), and [Data Factory](https://docs.microsoft.com/rest/api/datafactory/) for this setup.
+* **Microsoft Azure subscription** – If you don't have an Azure subscription, create a [free account](https://azure.microsoft.com/free/) now. You need to use [Azure Active Directory](https://docs.microsoft.com/azure/active-directory/), [OData connector](https://docs.microsoft.com/azure/data-factory/connector-odata#supported-capabilities), and [Data Factory](https://docs.microsoft.com/rest/api/datafactory/) for this setup.
 * **Azure data store** – Your data store must be [supported by the OData connector](https://docs.microsoft.com/azure/data-factory/connector-odata).
-* **Azure admin** – Azure admin privileges are required to create and register the app in Azure. You also need to ask the Azure global admin to grant you permissions in Azure Data Factory to connect your new app to the Azure data store. To create Data Factory instances, the user account that you use to sign in to Azure must be a member of the contributor or owner role, or an administrator of the Azure subscription.
+* **Azure admin** – Azure admin privileges are required to create and register the app in Azure. You also need to ask the Azure global admin to grant you permissions in Azure Data Factory to connect your new app to the Azure data store. To create Data Factory instances, the account you sign in to Azure with must have the contributor or owner role, or be an administrator of the Azure subscription.
 
 ## To set up with PowerShell
 
-The following uses [Azure PowerShell](https://docs.microsoft.com/azure/data-factory/quickstart-create-data-factory-powershell) to create and register a new analytics app and deploy the data factory for the export end-to-end.
+The following uses [Azure PowerShell](https://docs.microsoft.com/azure/data-factory/quickstart-create-data-factory-powershell) to create and register a new analytics app and deploy the data factory for the export end to end.
 
 You can then use this new data factory to access query data from Workplace Analytics and copy it to your choice data store (blob storage) by using the Azure Resource Manager template. You can reuse this new app over time for multiple projects without having to repeat these steps. You can also reuse the data factory you created for new pipelines.
 
@@ -61,56 +61,71 @@ You can then use this new data factory to access query data from Workplace Analy
    Select-AzureAzSubscription
    ```
 
-4. In PowerShell, you are prompted for the following configuration inputs: 
+4. In PowerShell, run the following command and enter these configuration inputs to register the Azure app, as shown in the following graphic.
 
-   - Subscription Id
-   - Resource Group Name
-   - AD App Registration Name
-   - Resource Group Location (confirm or change the default)
+   ```
+   ./register-app-for-wpa.ps1
+   ```
+
+   - **Subscription ID** - Azure subscription ID to use for this app
+   - **Resource Group Name** - Name the group to use for this app
+   - **AD App Registration Name** - Name of the new app
+   - **Resource Group Location** - Uses an existing one as the default. You can specify a new one and the script will create it for you.
+
+    ![App registration](./images/register-app.png)
 
     > [!Important]
     > For automatically refreshed data, you must link to a Workplace Analytics query that uses the [Auto-refresh option](https://docs.microsoft.com/workplace-analytics/tutorials/query-auto-refresh#create-a-query-with-the-auto-refresh-option). For static query results, you’ll need to enter a new OData link each time to update the query data in the connected Azure data store.
 
-5. The Resource Group location uses an existing one as the default. You can specify a new one and the script will create it for you.
-6. Download the following files to use for this setup:
+5. Download the following files to use for this setup:
 
     * [template.json](template.json)
     * [template-params.json](template-params.json)
     * [adf-wpa-feed-deploy.ps1](../scripts/adf-wpa-feed-deploy.ps1)
-    * [register-app-for-wpa.ps1](../scripts/adf-wpa-destroy.ps1)
+    * [register-app-for-wpa.ps1](../scripts/register-app-for-wpa.ps1)
     * [show-app-info.ps1](.../scripts/show-app-info.ps1)
 
-7. In PowerShell, run the following and edit the applicable parameters:
+6. In PowerShell, run the following and edit the applicable parameters:
 
     ```
     template-params.json
     ```
 
-    Edit the following to specify new parameters or confirm the defaults in the file:
+    Edit the following to specify new parameters or confirm the defaults in the file.
 
     * App specifications – wpaReaderAppSecretName
     * Vault specifications - wpaKeyVaultName and skipVaultCreation (you can reuse an existing key or vault in the same resource group)
-    * Storage and Azure Data Factory specifications
+    * Storage and Azure Data Factory specifications:
 
-      - **wpaAppStorageAccType**
-      - **wpaAppStorageAccNamePrefix**
-      - **wpaAppDataFactoryName**
-      - **wpaADFJobName** - for example **PersonEmailStats**
-      - **wpaEntityName** - for example **Persons** or **Meetings**, see the following note for details on how to find it
-      - **wpaSourceODataFeedUrl**
+      - **skipStorageCreation** - To use existing storage, keep default **Yes** value. To create new storage, change it to **No**.
+      - **wpaReaderAppSecretName** - The secret name to use for this app
+      - **skipVaultCreation** - To use an existing key vault, keep default **Yes** value. To create a new key vault, change it to **No**.
+      - **wpaKeyVaultName** - Key vault name of the existing or new vault.
+      - **wpaAppStorageAccType** - Name of the storage account type to use for this app, such as **Standard_LRS**.
+      - **wpaAppStorageAccName** - Name of the storage account to use for this app.
+      - **storageTargetBlobFolderPath** - The path of the target storage blob location.
+      - **wpaAppDataFactoryName** - Name of the Azure Data factory to use for this app.
+      - **wpaADFJobName** - Name of the Azure Data factory job, such as **PersonEmailStats**.
+      - **wpaEntityName** - Name of the query data entity this app will use. For example **Persons** or **Meetings**, see the following note for details on how to find it.
+      - **wpaSourceODataFeedUrl** - OData URL of the query data that you must copy from within Workplace Analytics. See the following note to locate it.
 
       > [!Note]
-      > To find the entity name, which is in the OData link used for the Workplace Analytics query data export: Copy the OData query link from [Workplace Analytics](https://workplaceanalytics.office.com/) > **Queries** > **Results** and open it in a new browser window. Then search for **metadata** to find the entity name, which is shown after **$metadata#**. For example, the entity name shown in this graphic is **Persons**:
+      > To find the entity name, which is in the OData link used for the Workplace Analytics query data export:
+      > 
+      > 1. Copy the OData query link from [Workplace Analytics](https://workplaceanalytics.office.com/) > **Queries** > **Results** and open it in a new browser window.
+      > 2. Then search for **metadata** to find the entity name, which is shown after **$metadata#**. For example, the entity name shown in the following graphic is **Persons**.
+      > 
+      > ![Query entity set name](./images/entity-set-name.png)
 
-     ![Query entity set name](./images/entity-set-name.png)
-
-8. After you enter the correct parameter variables, run the following script in PowerShell to deploy the template:
+7. After you enter or confirm the correct parameter variables, run the following script in PowerShell to deploy the template, as shown in the following graphic.
 
    ```
-   \adf-wpa-feed-deploy.ps1
+   ./adf-wpa-feed-deploy.ps1
    ```
 
-9. Open the **Azure Resource group** to confirm your new app is available.<!-- The following graphic shows an example resource group that includes the new data factory, its applicable key vault, and the deployed storage.-->
+    ![Deploy the script](./images/deploy-script.png)
+
+8. Open the **Azure Resource group** to confirm your new app is available.<!-- The following graphic shows an example resource group that includes the new data factory, its applicable key vault, and the deployed storage.-->
 
     You can also view the app in **Azure Active Directory** > **All applications** > enter the name of the app to search for it.<!-- Then you can select it to view it. For example, this shows the rvtest_app:-->
 
