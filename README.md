@@ -77,13 +77,13 @@ You can then use this new data factory to access query data from Workplace Analy
     > [!Important]
     > For automatically refreshed data, you must link to a Workplace Analytics query that uses the [Auto-refresh option](https://docs.microsoft.com/workplace-analytics/tutorials/query-auto-refresh#create-a-query-with-the-auto-refresh-option). For static query results, you’ll need to enter a new OData link each time to update the query data in the connected Azure data store.
 
-5. Download the following files to use for this setup:
+5. In the [scripts folder](https://github.com/microsoftgraph/M365Insights/tree/master/scripts), right-click and select **Save link as**, and then select a folder to download each of the following files that are required for this setup.
 
-    * [template.json](../scripts/template.json)
-    * [template-params.json](../scripts/template-params.json)
-    * [adf-wpa-feed-deploy.ps1](../scripts/adf-wpa-feed-deploy.ps1)
-    * [register-app-for-wpa.ps1](../scripts/register-app-for-wpa.ps1)
-    * [show-app-info.ps1](../scripts/show-app-info.ps1)
+    * template.json
+    * template-params.json
+    * adf-wpa-feed-deploy.ps1
+    * register-app-for-wpa.ps1
+    * show-app-info.ps1
 
 6. In PowerShell, run the following and edit the applicable parameters:
 
