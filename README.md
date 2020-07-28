@@ -79,11 +79,11 @@ You can then use this new data factory to access query data from Workplace Analy
 
 5. In the [scripts folder](https://github.com/microsoftgraph/M365Insights/tree/master/scripts), right-click and select **Save link as**, and then select a folder to download each of the following files that are required for this setup.
 
-    * template.json
-    * template-params.json
-    * adf-wpa-feed-deploy.ps1
-    * register-app-for-wpa.ps1
-    * show-app-info.ps1
+    * **template.json**
+    * **template-params.json**
+    * **adf-wpa-feed-deploy.ps1**
+    * **register-app-for-wpa.ps1**
+    * **show-app-info.ps1**
 
 6. In PowerShell, run the following and edit the applicable parameters:
 
