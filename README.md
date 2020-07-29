@@ -1,17 +1,3 @@
----
-
-title: Automate query data export to Azure through PowerShell
-description: Steps for admins to set up an automated Workplace Analytics query data export to Azure with PowerShell
-author: madehmer
-ms.author: v-mideh
-ms.topic: article
-localization_priority: normal 
-ms.prod: wpa
-ms.collection: M365-analytics
-manager: scott.ruble
-audience: Admin
----
-
 # Automate query data export to Azure with PowerShell
 
 Do you need to combine Workplace Analytics query data with other Azure data sources, such as HR or Sales data for more advanced data analytics and reporting? Are you manually downloading large amounts of static query data from Workplace Analytics and then uploading it into Azure on a routine basis?
